@@ -19,7 +19,7 @@
 
 #include <SPI.h>
 
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(ARDUINO_AVR_YUN)
   #define OUT_LATCH_PIN (4)
   #define _OUT_LATCH_PORT PORTD
   #define _OUT_LATCH_BIT 4
@@ -40,6 +40,32 @@
   #define SPI_CLOCK 3000000
 
   #define BUFFER_ATTRS
+#endif
+
+#if defined(ARDUINO_AVR_YUNxx)
+  // FIXME
+  #define OUT_LATCH_PIN 4
+  #define _OUT_LATCH_PORT PORTD
+  #define _OUT_LATCH_BIT 4
+
+  #define IN_LATCH_PIN 5
+  #define _IN_LATCH_PORT PORTD
+  #define _IN_LATCH_BIT 5
+
+  #define OUT_LATCH(){\
+    _OUT_LATCH_PORT |= (1 << _OUT_LATCH_BIT);\
+    _OUT_LATCH_PORT &= ~(1 << _OUT_LATCH_BIT);\
+  }
+  #define IN_LATCH() {\
+    _IN_LATCH_PORT &= ~(1 << _IN_LATCH_BIT);\
+    _IN_LATCH_PORT |= (1 << _IN_LATCH_BIT);\
+  }
+
+  #define SPI_CLOCK 30000 // 3000000
+
+  #define BUFFER_ATTRS
+  
+  #define LATCH_PIN xx
 #endif
 
 #ifdef ARDUINO_ESP8266_WEMOS_D1MINI
@@ -86,7 +112,7 @@
 
 #endif
 
-#if !defined(__AVR_ATmega168__) && !defined(__AVR_ATmega328P__) && !defined(ARDUINO_ESP8266_WEMOS_D1MINI) && !defined(ESP32)
+#if !defined(__AVR_ATmega168__) && !defined(__AVR_ATmega328P__) && !defined(ARDUINO_AVR_YUN) && !defined(ARDUINO_ESP8266_WEMOS_D1MINI) && !defined(ESP32)
 #error "Unknown/unsupported board for SPI mode. ATmega328-based boards (Uno, Duemilanove, Diecimila), ESP8266 and ESP32 are currently supported"
 #endif
 
@@ -142,11 +168,11 @@ inline void initialize_modules() {
   memset(motor_buffer, 0, MOTOR_BUFFER_LENGTH);
   memset(sensor_buffer, 0, SENSOR_BUFFER_LENGTH);
 
+
+#ifdef ESP32
   // Initialize SPI
   pinMode(LATCH_PIN, OUTPUT);
   digitalWrite(LATCH_PIN, LOW);
-
-#ifdef ESP32
 
   esp_err_t ret;
 
@@ -250,6 +276,11 @@ inline void motor_sensor_io() {
       extra_bit = val & B00000001;
 #else
       sensor_buffer[i] = val;
+	  Serial.print(" sensor[");
+	  Serial.print(i);
+	  Serial.print("]:");
+	  Serial.print(sensor_buffer[i],16);
+	  Serial.println();
 #endif
     }
   }

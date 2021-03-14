@@ -5,11 +5,11 @@
 /***** CONFIGURATION *****/
 
 // 1) Mode
-#define SENSOR_TEST false
+#define SENSOR_TEST true
 
 // 2) General Settings
 #ifndef NUM_MODULES
-#define NUM_MODULES (12)
+#define NUM_MODULES (4)
 #endif
 
 // Whether to force a full rotation when the same letter is specified again
@@ -39,7 +39,7 @@ const uint8_t flaps[NUM_FLAPS] = {
 #ifndef SPLITFLAP_PIO_HARDWARE_CONFIG
   // Note: these values are only used in the Arduino IDE. For PlatformIO,
   // hardware configuration is set by the environment, in platformio.ini.
-  #define SPI_IO false
+  #define SPI_IO true
   #define REVERSE_MOTOR_DIRECTION false
   #define NEOPIXEL_DEBUGGING_ENABLED true
   #define SSD1306_DISPLAY false
@@ -48,7 +48,7 @@ const uint8_t flaps[NUM_FLAPS] = {
 
 // 5) Board-dependent Default Settings
 
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(ARDUINO_AVR_YUN)
   #if SPI_IO
   #define NEOPIXEL_PIN 6
   #else

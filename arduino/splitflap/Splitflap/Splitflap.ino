@@ -68,9 +68,9 @@ int recv_buffer[NUM_MODULES];
 
 #if NEOPIXEL_DEBUGGING_ENABLED
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_MODULES, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
-uint32_t color_green = strip.Color(0, 30, 0);
+uint32_t color_green = strip.Color(0, 5, 0); // orig: strip.Color(0, 30, 0)
 uint32_t color_red = strip.Color(100, 0, 0);
-uint32_t color_purple = strip.Color(15, 0, 15);
+uint32_t color_purple = strip.Color(3, 0, 3); // orig: strip.Color(15, 0, 15);
 uint32_t color_orange = strip.Color(30, 7, 0);
 #endif
 
@@ -429,11 +429,12 @@ void sensor_test_iteration() {
         color = color_purple;
       }
       Serial.print(modules[i]->GetHomeState() ? '0' : '1');
-
+      #if 0
       // Make LEDs flash in sequence to indicate sensor test mode
       if ((millis() / 32) % NUM_MODULES == i) {
         color += 8 + (8 << 8) + ((uint32_t)8 << 16);
       }
+      #endif
       strip.setPixelColor(i, color);
     }
     strip.show();
