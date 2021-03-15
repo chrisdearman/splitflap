@@ -5,7 +5,7 @@
 /***** CONFIGURATION *****/
 
 // 1) Mode
-#define SENSOR_TEST true
+#define SENSOR_TEST false
 
 // 2) General Settings
 #ifndef NUM_MODULES

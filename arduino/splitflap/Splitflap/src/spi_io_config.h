@@ -24,49 +24,37 @@
   #define _OUT_LATCH_PORT PORTD
   #define _OUT_LATCH_BIT 4
 
-  #define IN_LATCH_PIN (5)
+  #define IN_LATCH_PIN (5)				// Sensor Latch (shift register)
   #define _IN_LATCH_PORT PORTD
   #define _IN_LATCH_BIT 5
-
-  #define OUT_LATCH(){\
-    _OUT_LATCH_PORT |= (1 << _OUT_LATCH_BIT);\
-    _OUT_LATCH_PORT &= ~(1 << _OUT_LATCH_BIT);\
-  }
-  #define IN_LATCH() {\
-    _IN_LATCH_PORT &= ~(1 << _IN_LATCH_BIT);\
-    _IN_LATCH_PORT |= (1 << _IN_LATCH_BIT);\
-  }
-
-  #define SPI_CLOCK 3000000
-
-  #define BUFFER_ATTRS
-#endif
-
-#if defined(ARDUINO_AVR_YUNxx)
-  // FIXME
-  #define OUT_LATCH_PIN 4
-  #define _OUT_LATCH_PORT PORTD
-  #define _OUT_LATCH_BIT 4
-
-  #define IN_LATCH_PIN 5
-  #define _IN_LATCH_PORT PORTD
-  #define _IN_LATCH_BIT 5
-
-  #define OUT_LATCH(){\
-    _OUT_LATCH_PORT |= (1 << _OUT_LATCH_BIT);\
-    _OUT_LATCH_PORT &= ~(1 << _OUT_LATCH_BIT);\
-  }
-  #define IN_LATCH() {\
-    _IN_LATCH_PORT &= ~(1 << _IN_LATCH_BIT);\
-    _IN_LATCH_PORT |= (1 << _IN_LATCH_BIT);\
-  }
-
-  #define SPI_CLOCK 30000 // 3000000
-
-  #define BUFFER_ATTRS
+  #define SENSOR_LATCH 5
   
-  #define LATCH_PIN xx
+#if 0
+#define OUT_LATCH(){\
+    _OUT_LATCH_PORT |= (1 << _OUT_LATCH_BIT);\
+    _OUT_LATCH_PORT &= ~(1 << _OUT_LATCH_BIT);\
+  }
+  #define IN_LATCH() {\
+    _IN_LATCH_PORT &= ~(1 << _IN_LATCH_BIT);\
+    _IN_LATCH_PORT |= (1 << _IN_LATCH_BIT);\
+  }
+#else
+  #define OUT_LATCH(){ \
+	digitalWrite(OUT_LATCH_PIN, 1); \
+	digitalWrite(OUT_LATCH_PIN, 0); \
+}
+  #define IN_LATCH() {\
+    digitalWrite(SENSOR_LATCH, 0); \
+    digitalWrite(SENSOR_LATCH, 1); \
+ }
+
 #endif
+  #define SPI_CLOCK 10000
+
+  #define BUFFER_ATTRS
+#endif
+
+
 
 #ifdef ARDUINO_ESP8266_WEMOS_D1MINI
   #define OUT_LATCH_PIN (D1)
@@ -257,6 +245,13 @@ inline void motor_sensor_io() {
     ret=spi_device_polling_transmit(spi_rx, &rx_transaction);
     assert(ret==ESP_OK);
 #else
+
+  pinMode(SENSOR_LATCH, OUTPUT);
+// for (uint8_t i = 0; i < 40; i++) {
+//	digitalWrite(SENSOR_LATCH, i & 1);
+//	delayMicroseconds(1);
+//  }
+
   IN_LATCH();
   delayMicroseconds(1);
 
@@ -276,11 +271,11 @@ inline void motor_sensor_io() {
       extra_bit = val & B00000001;
 #else
       sensor_buffer[i] = val;
-	  Serial.print(" sensor[");
-	  Serial.print(i);
-	  Serial.print("]:");
-	  Serial.print(sensor_buffer[i],16);
-	  Serial.println();
+//	  Serial.print(" sensor[");
+//	  Serial.print(i);
+//	  Serial.print("]:");
+//	  Serial.print(sensor_buffer[i],16);
+//	  Serial.println();
 #endif
     }
   }
