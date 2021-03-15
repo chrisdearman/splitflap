@@ -49,7 +49,7 @@
  }
 
 #endif
-  #define SPI_CLOCK 10000
+  #define SPI_CLOCK 3000000
 
   #define BUFFER_ATTRS
 #endif
